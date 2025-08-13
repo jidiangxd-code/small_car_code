@@ -2,7 +2,7 @@
 #include "interface.h"
 #include "stm32f10x.h"
 
-//GPIOÅäÖÃº¯Êı
+//GPIOé…ç½®å‡½æ•°
 void MotorGPIO_Configuration(void)
 {		
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -34,14 +34,14 @@ void MotorGPIO_Configuration(void)
 	
 }
 
-//¸ù¾İÕ¼¿Õ±ÈÇı¶¯µç»ú×ª¶¯
+//æ ¹æ®å ç©ºæ¯”é©±åŠ¨ç”µæœºè½¬åŠ¨
 void CarMove(void)
 {   
 	
 	 BEHIND_RIGHT_EN;
 	
- /* //×óÇ°ÂÖ
-	if(front_left_speed_duty > 0)//ÏòÇ°
+ /* //å·¦å‰è½®
+	if(front_left_speed_duty > 0)//å‘å‰
 	{
 		if(speed_count < front_left_speed_duty)
 		{
@@ -51,7 +51,7 @@ void CarMove(void)
 			FRONT_LEFT_STOP;
 		}
 	}
-	else if(front_left_speed_duty < 0)//Ïòºó
+	else if(front_left_speed_duty < 0)//å‘å
 	{
 		if(speed_count < (-1)*front_left_speed_duty)
 		{
@@ -61,127 +61,121 @@ void CarMove(void)
 			FRONT_LEFT_STOP;
 		}
 	}
-	else                //Í£Ö¹
+	else                //åœæ­¢
 	{
 		FRONT_LEFT_STOP;
 	}*/
 	
-		//ÓÒÇ°ÂÖ
-	if(front_right_speed_duty > 0)//ÏòÇ°
+		//å³å‰è½®
+	if(front_right_speed_duty > 0)//å‘å‰
 	{
 		if(speed_count < front_right_speed_duty)
 		{
 			FRONT_RIGHT_GO;
-		}else                //Í£Ö¹
+		}else                //åœæ­¢
 		{
 			FRONT_RIGHT_STOP;
 		}
 	}
-	else if(front_right_speed_duty < 0)//Ïòºó
+	else if(front_right_speed_duty < 0)//å‘å
 	{
 		if(speed_count < (-1)*front_right_speed_duty)
 		{
 			FRONT_RIGHT_BACK;
-		}else                //Í£Ö¹
+		}else                //åœæ­¢
 		{
 			FRONT_RIGHT_STOP;
 		}
 	}
-	else                //Í£Ö¹
+	else                //åœæ­¢
 	{
 		FRONT_RIGHT_STOP;
 	}
 	
-	//×óºóÂÖ
-	if(behind_left_speed_duty > 0)//ÏòÇ°
+	//å·¦åè½®
+	if(behind_left_speed_duty > 0)//å‘å‰
 	{
 		if(speed_count < behind_left_speed_duty)
 		{
 			BEHIND_LEFT_GO;
-		}	else                //Í£Ö¹
+		}	else                //åœæ­¢
 		{
 			BEHIND_LEFT_STOP;
 		}
 	}
-	else if(behind_left_speed_duty < 0)//Ïòºó
+	else if(behind_left_speed_duty < 0)//å‘å
 	{
 		if(speed_count < (-1)*behind_left_speed_duty)
 		{
 			BEHIND_LEFT_BACK;
-		}	else                //Í£Ö¹
+		}	else                //åœæ­¢
 		{
 			BEHIND_LEFT_STOP;
 		}
 	}
-	else                //Í£Ö¹
+	else                //åœæ­¢
 	{
 		BEHIND_LEFT_STOP;
 	}
 	
-/*		//ÓÒºóÂÖ
-	if(behind_right_speed_duty > 0)//ÏòÇ°
+/*		//å³åè½®
+	if(behind_right_speed_duty > 0)//å‘å‰
 	{
 		if(speed_count < behind_right_speed_duty)
 		{
 			BEHIND_RIGHT_GO;
-		}	else                //Í£Ö¹
-		{
-			BEHIND_RIGHT_STOP;
-		}
-	}
-	else if(behind_right_speed_duty < 0)//Ïòºó
-	{
-		if(speed_count < (-1)*behind_right_speed_duty)
-		{
-			BEHIND_RIGHT_BACK;
-		}	else                //Í£Ö¹
-		{
-			BEHIND_RIGHT_STOP;
-		}
-	}
-	else                //Í£Ö¹
-	{
-		BEHIND_RIGHT_STOP;
-	}*/
+//Ù¶
+void CarRun(int left_speed, int right_speed)
+{
+        front_left_speed_duty = left_speed;
+        behind_left_speed_duty = left_speed;
+        front_right_speed_duty = right_speed;
+        behind_right_speed_duty = right_speed;
 }
 
-//ÏòÇ°
+//Ç°
 void CarGo(void)
 {
-	front_left_speed_duty=SPEED_DUTY;
-	front_right_speed_duty=SPEED_DUTY;
-	behind_left_speed_duty=SPEED_DUTY;
-	behind_right_speed_duty=SPEED_DUTY;
+        CarRun(SPEED_DUTY, SPEED_DUTY);
 }
 
-//ºóÍË
+//
 void CarBack(void)
 {
-	front_left_speed_duty=-SPEED_DUTY;
-	front_right_speed_duty=-SPEED_DUTY;
-	behind_left_speed_duty=-SPEED_DUTY;
-	behind_right_speed_duty=-SPEED_DUTY;
+        CarRun(-SPEED_DUTY, -SPEED_DUTY);
 }
 
-//Ïò×ó
+//
 void CarLeft(void)
 {
-	front_left_speed_duty=-20;
-	front_right_speed_duty=SPEED_DUTY;
-	behind_left_speed_duty=-20;
-	behind_right_speed_duty=SPEED_DUTY+10;//Ôö¼ÓºóÂÖÇı¶¯Á¦
+        CarRun(-SPEED_DUTY, SPEED_DUTY);
 }
 
-//ÏòÓÒ
+//
+void CarRight(void)
+{
+        CarRun(SPEED_DUTY, -SPEED_DUTY);
+}
+
+//Í£Ö¹
+void CarStop(void)
+{
+        CarRun(0, 0);
+}
+	behind_left_speed_duty=-20;
+	behind_right_speed_duty=SPEED_DUTY+10;//å¢åŠ åè½®é©±åŠ¨åŠ›
+}
+
+//å‘å³
 void CarRight(void)
 {
 	front_left_speed_duty=SPEED_DUTY;
 	front_right_speed_duty=-20;
-	behind_left_speed_duty=SPEED_DUTY+10;//Ôö¼ÓºóÂÖÇı¶¯Á¦
+	behind_left_speed_duty=SPEED_DUTY+10;//å¢åŠ åè½®é©±åŠ¨åŠ›
 	behind_right_speed_duty=-20;
 }
 
-//Í£Ö¹
+//åœæ­¢
 void CarStop(void)
 {
 	front_left_speed_duty=0;

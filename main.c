@@ -1,5 +1,5 @@
-//Á¬½Ó·½Ê½ £ºÇë²Î¿¼interface.hÎÄ¼ş
-//²¿·İÔ´ÂëÀ´Ô´ÍøÂç--ÇëÊÔÓÃ24Ğ¡Ê±ºóÉ¾³ı
+//è¿æ¥æ–¹å¼ ï¼šè¯·å‚è€ƒinterface.hæ–‡ä»¶
+//éƒ¨ä»½æºç æ¥æºç½‘ç»œ--è¯·è¯•ç”¨24å°æ—¶ååˆ é™¤
 #include "stm32f10x.h"
 #include "interface.h"
 #include "LCD1602.h"
@@ -7,32 +7,41 @@
 #include "motor.h"
 #include "UltrasonicCtrol.h"
 
-//È«¾Ö±äÁ¿¶¨Òå
-unsigned int speed_count=0;//Õ¼¿Õ±È¼ÆÊıÆ÷ 50´ÎÒ»ÖÜÆÚ
+//å…¨å±€å˜é‡å®šä¹‰
+unsigned int speed_count=0;//å ç©ºæ¯”è®¡æ•°å™¨ 50æ¬¡ä¸€å‘¨æœŸ
 char front_left_speed_duty=SPEED_DUTY;
 char front_right_speed_duty=SPEED_DUTY;
 char behind_left_speed_duty=SPEED_DUTY;
 char behind_right_speed_duty=SPEED_DUTY;
 
-unsigned char tick_5ms = 0;//5ms¼ÆÊıÆ÷£¬×÷ÎªÖ÷º¯ÊıµÄ»ù±¾ÖÜÆÚ
-unsigned char tick_1ms = 0;//1ms¼ÆÊıÆ÷£¬×÷Îªµç»úµÄ»ù±¾¼ÆÊıÆ÷
-unsigned char tick_200ms = 0;//Ë¢ĞÂÏÔÊ¾
+unsigned char tick_5ms = 0;//5msè®¡æ•°å™¨ï¼Œä½œä¸ºä¸»å‡½æ•°çš„åŸºæœ¬å‘¨æœŸ
+unsigned char tick_1ms = 0;//1msè®¡æ•°å™¨ï¼Œä½œä¸ºç”µæœºçš„åŸºæœ¬è®¡æ•°å™¨
+unsigned char tick_200ms = 0;//åˆ·æ–°æ˜¾ç¤º
 
-char ctrl_comm = COMM_STOP;//¿ØÖÆÖ¸Áî
-char ctrl_comm_last = COMM_STOP;//ÉÏÒ»´ÎµÄÖ¸Áî
+char ctrl_comm = COMM_STOP;//æ§åˆ¶æŒ‡ä»¤
+char ctrl_comm_last = COMM_STOP;//ä¸Šä¸€æ¬¡çš„æŒ‡ä»¤
 unsigned char continue_time=0;
 
 unsigned char duoji_count=0;
 unsigned char zhuanjiao = 11;
 
-//¶¨Ê±Æ÷ÖÜÆÚÊÇ0.1ms 
-//¶æ»úPWMÖÜÆÚÊÇ20ms£¬0 - 180¡ã·Ö±ğ¶ÔÓ¦ 0.5 - 2.5ms µÄÂö¿í
-//±äÁ¿zhuanjiao¿Éµ÷·¶Î§Îª 5 - 25 ¶ÔÓ¦ 0 - 180¡ã£¬µ±zhuanjiao = 15 Ê±¶ÔÓ¦90¡ã
-//ÎªÁËÈÃ¶æ»úÔËĞĞ¸ü¾«È·£¬½¨ÒéÏòÓÒ»òÏò×ó×ªÊÇ²»ÒªÊ¹ÓÃ0¡ã»ò180¡ã£¬½¨ÒéÏòÖĞ¼ä¿¿½üÒ»µã
-//ÓÒ×ªÊ±Ñ¡ÓÃzhuanjiao=7 ×ó×ªÊ±ÓÃzhuanjiao=23
-void DuojiMid()
+void GetAllDistance(unsigned int *dis_left,unsigned int *dis_right,unsigned int *dis_direct)
 {
-	zhuanjiao = 13;
+        DuojiMid();//Î»
+
+}
+
+//Ñ²Ù¶
+void LineFollowUpdate(int error)
+{
+        int base = SPEED_DUTY;
+        int left_speed = base - error;
+        int right_speed = base + error;
+        CarRun(left_speed, right_speed);
+}
+
+void BarrierProc()
+{
 	Delayms(500);
 }
 
@@ -48,7 +57,7 @@ void DuojiLeft()
 	Delayms(500);
 }
 
-///»ñÈ¡Èı¸ö·½ÏòµÄ¾àÀë,½øÀ´Ç°¶æ»ú·½ÏòÎªÏòÇ°
+///è·å–ä¸‰ä¸ªæ–¹å‘çš„è·ç¦»,è¿›æ¥å‰èˆµæœºæ–¹å‘ä¸ºå‘å‰
 void GetAllDistance(unsigned int *dis_left,unsigned int *dis_right,unsigned int *dis_direct)
 {
 	CarStop();
@@ -59,27 +68,27 @@ void GetAllDistance(unsigned int *dis_left,unsigned int *dis_right,unsigned int 
 	DuojiMid();
 	DuojiLeft();
 	Delayms(100);
-	GetDistanceDelay();//»ñÈ¡×ó±ß¾àÀë
+	GetDistanceDelay();//è·å–å·¦è¾¹è·ç¦»
 	*dis_left = distance_cm;
 	
-	DuojiMid();//¹éÎ»
+	DuojiMid();//å½’ä½
 	
 	DuojiRight();
 	Delayms(100);
-	GetDistanceDelay();//»ñÈ¡ÓÒ±ß¾àÀë
+	GetDistanceDelay();//è·å–å³è¾¹è·ç¦»
 	*dis_right = distance_cm;
 
-	DuojiMid();//¹éÎ»
+	DuojiMid();//å½’ä½
 	
 }
 
 void BarrierProc()
 {
-		if(distance_cm < 15)//Ç°·½ÓĞÕÏ°­Îï
+		if(distance_cm < 15)//å‰æ–¹æœ‰éšœç¢ç‰©
 	{
-		unsigned int dis_left;//×ó±ß¾àÀë
-		unsigned int dis_right;//ÓÒ±ß¾àÀë
-		unsigned int dis_direct;//Ç°·½¾àÀë
+		unsigned int dis_left;//å·¦è¾¹è·ç¦»
+		unsigned int dis_right;//å³è¾¹è·ç¦»
+		unsigned int dis_direct;//å‰æ–¹è·ç¦»
 		if(distance_cm < 8)
 		{
 			CarBack();
@@ -109,13 +118,13 @@ void BarrierProc()
 				Delayms(400);
 				continue;
 			}
-			else if(dis_direct > 15 && dis_left > 15 && dis_right > 15)//Ç°·½¾àÀë×îÔ¶
+			else if(dis_direct > 15 && dis_left > 15 && dis_right > 15)//å‰æ–¹è·ç¦»æœ€è¿œ
 			{
 				CarGo();
 				Delayms(50);
 				return;
 			}
-			else if(dis_left < dis_right)//ÓÒ×ª
+			else if(dis_left < dis_right)//å³è½¬
 			{
 				CarRight();
 				Delayms(500);
@@ -154,7 +163,7 @@ int main(void)
 		{
 			tick_5ms = 0;
 
-			Distance();//¼ÆËã¾àÀë
+			Distance();//è®¡ç®—è·ç¦»
 			BarrierProc();
 
 		}
